@@ -53,6 +53,16 @@ func (h *Hola) Unmarshal(b []interface{}) error {
 }
 
 func main() {
+	// Listen for hola table changes
+	// hola table structure as shown
+	//CREATE TABLE `hola` (
+	//	`Column1` int NOT NULL AUTO_INCREMENT,
+	//	`Column2` varchar(100) DEFAULT NULL,
+	//	`Column3` varchar(100) DEFAULT NULL,
+	//	`Column4` varchar(100) DEFAULT NULL,
+	//	`Column5` varchar(100) DEFAULT NULL,
+	//	PRIMARY KEY (`Column1`)
+	//) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 	event.NewListener(event.ListenerConfig{
 		Host:     "127.0.01",
 		Port:     3306,
