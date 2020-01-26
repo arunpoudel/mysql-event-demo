@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"github.com/siddontang/go-mysql/replication"
+	"reflect"
 )
 
 type Unmarshler interface {
@@ -26,6 +27,10 @@ type ListenerConfig struct {
 	Unmarshlers map[string]Unmarshler
 }
 
+func copy(u Unmarshler) Unmarshler {
+	return reflect.New(reflect.ValueOf(u).Elem().Type()).Interface().(Unmarshler)
+}
+
 func NewListener(config ListenerConfig) {
 	cfg := replication.BinlogSyncerConfig{
 		ServerID: 1,
@@ -46,21 +51,21 @@ func NewListener(config ListenerConfig) {
 				if listener, ok := config.Listeners[string(event.Table.Table)]; ok {
 					if ev.Header.EventType == replication.WRITE_ROWS_EVENTv2 {
 						for _, row := range event.Rows {
-							added := unmarshler
+							added := copy(unmarshler)
 							added.Unmarshal(row)
 							listener.OnAdd(added)
 						}
 					} else if ev.Header.EventType == replication.UPDATE_ROWS_EVENTv2 {
 						for i := 0; i < len(event.Rows); i += 2 {
-							previous := unmarshler
+							previous := copy(unmarshler)
 							previous.Unmarshal(event.Rows[i])
-							current := unmarshler
+							current := copy(unmarshler)
 							current.Unmarshal(event.Rows[i+1])
 							listener.OnEdit(previous, current)
 						}
 					} else if ev.Header.EventType == replication.DELETE_ROWS_EVENTv2 {
 						for _, row := range event.Rows {
-							deleted := unmarshler
+							deleted := copy(unmarshler)
 							deleted.Unmarshal(row)
 							listener.OnDelete(deleted)
 						}

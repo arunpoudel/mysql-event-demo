@@ -36,10 +36,18 @@ type Hola struct {
 
 func (h *Hola) Unmarshal(b []interface{}) error {
 	h.Column1 = uint32(b[0].(int32))
-	h.Column2 = b[1].(string)
-	h.Column3 = b[2].(string)
-	h.Column4 = b[3].(string)
-	h.Column5 = b[4].(string)
+	if b[1] != nil {
+		h.Column2 = b[1].(string)
+	}
+	if b[2] != nil {
+		h.Column3 = b[2].(string)
+	}
+	if b[3] != nil {
+		h.Column4 = b[3].(string)
+	}
+	if b[4] != nil {
+		h.Column5 = b[4].(string)
+	}
 
 	return nil
 }
